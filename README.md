@@ -49,7 +49,6 @@ lib/
 - Saved event IDs are held in the Cubit state and are not persisted.
 - QR codes are demo-only and are not valid for entry or verification.
 - Supabase is listed as a dependency but is not initialized or connected to these repositories.
-- The supplied ZIP did not contain native platform folders such as `android/`, `ios/`, or `web/`; it is a source-project archive. Use it to replace/merge the matching source files in your existing Flutter project, or generate platform scaffolding with Flutter if you need a standalone runnable project.
 
 ## Open and validate in your existing Flutter environment
 
@@ -59,5 +58,3 @@ lib/
 4. Run `dart format lib test`.
 5. Run `flutter analyze` and `flutter test`.
 6. Launch the app on an emulator or device and check discovery, saved events, booking and ticket screens.
-
-The current environment used to prepare this archive did not have the Flutter/Dart CLI available, so the analyzer and widget test could not be executed here. Please run the validation steps above before merging it into your working branch.
