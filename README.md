@@ -61,13 +61,13 @@ supabase/
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/baderjbaradev-collab/eventflow-flutter.git
+   git clone https://github.com/BaderJbaraDev/eventflow.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd eventflow-flutter
+   cd eventflow
    ```
 
 3. Install dependencies:
@@ -111,7 +111,7 @@ This project demonstrates practical Flutter development, feature-based code orga
 
 Flutter & Cross-Platform Developer | Backend Engineer
 
-GitHub: [@baderjbaradev-collab](https://github.com/baderjbaradev-collab)
+GitHub: [@baderjbaradev](https://github.com/baderjbaradev)
 
 ---
 
