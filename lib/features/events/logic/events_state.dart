@@ -1,6 +1,6 @@
 
 import 'package:equatable/equatable.dart';
-import '../domain/event.dart';
+import '../domain/entities/event.dart';
 
 class EventsState extends Equatable {
   const EventsState({

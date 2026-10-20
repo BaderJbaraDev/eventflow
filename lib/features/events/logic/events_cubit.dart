@@ -1,22 +1,21 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../data/demo_event_repository.dart';
-import '../domain/event.dart';
+
+import '../domain/entities/event.dart';
+import '../domain/repositories/events_repository.dart';
 import 'events_state.dart';
 
 class EventsCubit extends Cubit<EventsState> {
-  EventsCubit({
-    this._repository = const DemoEventRepository(),
-  })  : super(const EventsState());
+  EventsCubit({required EventsRepository repository})
+      : _repository = repository,
+        super(const EventsState());
 
-  final DemoEventRepository _repository;
+  final EventsRepository _repository;
 
   Future<void> loadEvents() async {
     emit(state.copyWith(isLoading: true, clearError: true));
 
     try {
       final events = await _repository.getEvents();
-
       emit(state.copyWith(
         events: events,
         isLoading: false,
@@ -30,25 +29,23 @@ class EventsCubit extends Cubit<EventsState> {
     }
   }
 
-  void search(String query) {
-    emit(state.copyWith(searchQuery: query));
-  }
+  void search(String query) => emit(state.copyWith(searchQuery: query));
 
-  void selectCategory(String category) {
-    emit(state.copyWith(selectedCategory: category));
-  }
+  void selectCategory(String category) =>
+      emit(state.copyWith(selectedCategory: category));
 
   void toggleSaved(Event event) {
     final updatedIds = Set<String>.from(state.savedEventIds);
+    final wasSaved = updatedIds.contains(event.id);
 
-    if (!updatedIds.add(event.id)) {
+    if (wasSaved) {
       updatedIds.remove(event.id);
+    } else {
+      updatedIds.add(event.id);
     }
 
     emit(state.copyWith(savedEventIds: updatedIds));
   }
 
-  bool isSaved(String eventId) {
-    return state.savedEventIds.contains(eventId);
-  }
+  bool isSaved(String eventId) => state.savedEventIds.contains(eventId);
 }

@@ -1,118 +1,63 @@
-# EventFlow — Flutter Event Booking App
+# EventFlow
 
-**EventFlow** is a Flutter portfolio project that demonstrates a modern event discovery and ticket booking experience. It was built to showcase Flutter development skills, clean code organization, and state management.
+EventFlow is a Flutter event-discovery and demo-ticket application. This archive contains the Dart source, tests, analysis options and package manifest from the supplied project, reorganized around feature-first Clean Architecture.
 
-> **Project status:** Portfolio demo. Some features use mock data and are not connected to a production backend.
-
-## Features
-
-- **Event Discovery:** Browse a collection of sample events.
-- **Event Details:** View event information and details.
-- **Saved Events:** Save events for quick access.
-- **Ticket Booking Flow:** Explore a simulated booking experience.
-- **My Tickets:** View demo bookings.
-- **QR Code Tickets:** Generate QR codes for demonstration purposes.
-- **Modern UI:** A consistent theme and reusable UI components.
-- **Modular Architecture:** Organized code across feature, data, domain, and presentation layers.
-
-## Tech Stack
-
-- **Flutter** — Cross-platform UI development
-- **Dart** — Application programming language
-- **flutter_bloc** — State management
-- **Equatable** — Value equality
-- **qr_flutter** — QR code generation
-- **Supabase** — Planned backend integration
-
-## Project Structure
+## Architecture
 
 ```text
 lib/
-├── app/
-├── core/
-│   ├── theme/
-│   └── widgets/
-└── features/
-    ├── events/
-    │   ├── data/
-    │   ├── domain/
-    │   ├── logic/
-    │   └── presentation/
-    └── bookings/
-        ├── data/
-        ├── domain/
-        ├── logic/
-        └── presentation/
-
-supabase/
-└── schema.sql
+  main.dart
+  app/
+    event_flow_app.dart       # Dependency composition and app entry widget
+    home_shell.dart           # Bottom navigation shell
+  core/
+    theme/                    # Shared colors and theme
+    widgets/                  # Shared UI components
+  features/
+    events/
+      presentation/           # Pages, page bodies and reusable widgets
+      logic/                  # EventsCubit and immutable EventsState
+      domain/
+        entities/             # Event domain entity
+        repositories/         # EventsRepository contract
+      data/
+        datasources/          # Demo event source
+        repositories/         # Concrete repository implementation
+    bookings/
+      presentation/           # Ticket list and booking confirmation
+      logic/                  # BookingsCubit and BookingsState
+      domain/
+        entities/             # Booking domain entity
+        repositories/         # BookingsRepository contract
+      data/
+        datasources/          # In-memory booking source
+        repositories/         # Concrete repository implementation
 ```
 
-## Getting Started
+## Responsibilities
 
-### Prerequisites
+- **Presentation:** builds widgets and forwards user actions. `EventsPage` composes the discovery screen, while `EventsResultsBody` renders loading, error, empty and populated result states.
+- **Logic:** Cubits coordinate operations and expose immutable state objects to the UI.
+- **Domain:** contains entities and repository contracts; it does not depend on Flutter UI or concrete data sources.
+- **Data:** provides demo/in-memory sources and repository implementations. Replace these implementations with API/Supabase-backed implementations later without coupling the Cubits to a specific backend.
+- **App:** wires dependencies using `RepositoryProvider` and `BlocProvider`.
 
-- Flutter SDK
-- Dart SDK
-- Android Studio or VS Code
+## Current limitations
 
-### Installation
+- Events are hard-coded demo data.
+- Bookings exist in memory only and disappear when the app process restarts.
+- Saved event IDs are held in the Cubit state and are not persisted.
+- QR codes are demo-only and are not valid for entry or verification.
+- Supabase is listed as a dependency but is not initialized or connected to these repositories.
+- The supplied ZIP did not contain native platform folders such as `android/`, `ios/`, or `web/`; it is a source-project archive. Use it to replace/merge the matching source files in your existing Flutter project, or generate platform scaffolding with Flutter if you need a standalone runnable project.
 
-1. Clone the repository:
+## Open and validate in your existing Flutter environment
 
-   ```bash
-   git clone https://github.com/BaderJbaraDev/eventflow.git
-   ```
+1. Extract the archive.
+2. Open the extracted folder in VS Code.
+3. Run `flutter pub get` from the VS Code terminal.
+4. Run `dart format lib test`.
+5. Run `flutter analyze` and `flutter test`.
+6. Launch the app on an emulator or device and check discovery, saved events, booking and ticket screens.
 
-2. Navigate to the project directory:
-
-   ```bash
-   cd eventflow
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   flutter pub get
-   ```
-
-4. Run the application:
-
-   ```bash
-   flutter run
-   ```
-
-## Current Limitations
-
-This project is a demonstration application and is not intended for production use.
-
-- Event and booking data use demo repositories.
-- Saved events and bookings are not persisted across app restarts.
-- QR codes are for demonstration only and do not represent validated tickets.
-- Authentication, payment processing, and production backend integration are not implemented.
-- The Supabase schema is a starting point for future backend development.
-
-## Future Improvements
-
-- Integrate Supabase for authentication and persistent data.
-- Add real-time event discovery and search.
-- Implement secure ticket booking and payment workflows.
-- Add persistent saved events and booking history.
-- Introduce automated unit and widget tests.
-- Add CI/CD workflows and release builds.
-
-## Purpose
-
-This project demonstrates practical Flutter development, feature-based code organization, state management, reusable widgets, and the design of an event booking workflow.
-
-## Author
-
-**Bader Jbara**
-
-Flutter & Cross-Platform Developer | Backend Engineer
-
-GitHub: [@baderjbaradev](https://github.com/baderjbaradev)
-
----
-
-*Built with Flutter as a software development portfolio project.*
+The current environment used to prepare this archive did not have the Flutter/Dart CLI available, so the analyzer and widget test could not be executed here. Please run the validation steps above before merging it into your working branch.

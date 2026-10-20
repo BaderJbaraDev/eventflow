@@ -1,17 +1,19 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../domain/demo_booking.dart';
+import '../domain/entities/booking.dart';
 
-class BookingSuccessPage extends StatelessWidget {
+class BookingSuccessPage extends HookWidget {
   const BookingSuccessPage({
     required this.booking,
     super.key,
   });
 
-  final DemoBooking booking;
+  final Booking booking;
 
   @override
   Widget build(BuildContext context) {
@@ -140,8 +142,7 @@ class BookingSuccessPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.of(context)
-                      .popUntil((route) => route.isFirst),
+                  onPressed: () => context.goNamed('home'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,

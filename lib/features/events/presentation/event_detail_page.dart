@@ -2,16 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooked_bloc/hooked_bloc.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/concept_notice.dart';
-import '../domain/event.dart';
+import '../domain/entities/event.dart';
 import '../logic/events_cubit.dart';
-import '../logic/events_state.dart';
 import '../../bookings/logic/bookings_cubit.dart';
-import '../../bookings/presentation/booking_success_page.dart';
+import '../../bookings/logic/bookings_state.dart';
 
-class EventDetailPage extends StatelessWidget {
+class EventDetailPage extends HookWidget {
   const EventDetailPage({
     required this.event,
     super.key,
@@ -21,6 +23,23 @@ class EventDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final eventsCubit = context.read<EventsCubit>();
+    final eventsState = useBlocBuilder(eventsCubit);
+    final bookingsCubit = context.read<BookingsCubit>();
+    final bookingState = useBlocBuilder(bookingsCubit);
+
+    useBlocListener<BookingsCubit, BookingsState>(
+      bookingsCubit,
+      (cubit, state, context) {
+        final message = state.errorMessage;
+        if (message == null) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      },
+      listenWhen: (state) => state.errorMessage != null,
+    );
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -28,30 +47,26 @@ class EventDetailPage extends StatelessWidget {
             expandedHeight: 300,
             pinned: true,
             leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => context.pop(),
               icon: const Icon(Icons.arrow_back),
               style: IconButton.styleFrom(
                 backgroundColor: Colors.white.withValues(alpha: 0.95),
               ),
             ),
             actions: [
-              BlocBuilder<EventsCubit, EventsState>(
-                builder: (context, state) {
-                  final saved = state.savedEventIds.contains(event.id);
-
-                  return IconButton(
-                    onPressed: () =>
-                        context.read<EventsCubit>().toggleSaved(event),
-                    icon: Icon(
-                      saved ? Icons.favorite : Icons.favorite_border,
-                      color: saved ? AppColors.error : AppColors.textPrimary,
-                    ),
-                    style: IconButton.styleFrom(
-                      backgroundColor:
-                          Colors.white.withValues(alpha: 0.95),
-                    ),
-                  );
-                },
+              IconButton(
+                onPressed: () => eventsCubit.toggleSaved(event),
+                icon: Icon(
+                  eventsState.savedEventIds.contains(event.id)
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: eventsState.savedEventIds.contains(event.id)
+                      ? AppColors.error
+                      : AppColors.textPrimary,
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.white.withValues(alpha: 0.95),
+                ),
               ),
               const SizedBox(width: 12),
             ],
@@ -180,31 +195,23 @@ class EventDetailPage extends StatelessWidget {
               ),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    final booking = context
-                        .read<BookingsCubit>()
-                        .bookEvent(event);
-
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => BookingSuccessPage(
-                          booking: booking,
-                        ),
-                      ),
-                    );
-                  },
+                  onPressed: bookingState.isBooking
+                      ? null
+                      : () async {
+                          final booking = await bookingsCubit.bookEvent(event);
+                          if (!context.mounted) return;
+                          if (booking == null) return;
+                          context.pushNamed('booking-success', extra: booking);
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
-                  child: const Text(
-                    'Book ticket',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
+                  child: bookingState.isBooking
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : const Text('Book ticket', style: TextStyle(fontWeight: FontWeight.w700)),
                 ),
               ),
             ],

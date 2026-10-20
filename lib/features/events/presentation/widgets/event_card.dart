@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../domain/event.dart';
+import '../../domain/entities/event.dart';
 
 class EventCard extends StatelessWidget {
   const EventCard({

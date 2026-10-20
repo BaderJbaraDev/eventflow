@@ -1,10 +1,9 @@
+import '../../domain/entities/event.dart';
 
-import '../domain/event.dart';
+class DemoEventsDataSource {
+  const DemoEventsDataSource();
 
-class DemoEventRepository {
-  const DemoEventRepository();
-
-  Future<List<Event>> getEvents() async {
+  Future<List<Event>> fetchEvents() async {
     final now = DateTime.now();
 
     return [

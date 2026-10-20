@@ -1,34 +1,61 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../events/domain/event.dart';
-import '../data/demo_booking_repository.dart';
-import '../domain/demo_booking.dart';
+import '../../events/domain/entities/event.dart';
+import '../domain/entities/booking.dart';
+import '../domain/repositories/bookings_repository.dart';
+import 'bookings_state.dart';
 
-class BookingsCubit extends Cubit<List<DemoBooking>> {
-  BookingsCubit({
-    DemoBookingRepository? repository,
-  }) : this._(repository ?? DemoBookingRepository());
-
-  BookingsCubit._(DemoBookingRepository repository)
+class BookingsCubit extends Cubit<BookingsState> {
+  BookingsCubit({required BookingsRepository repository})
       : _repository = repository,
-        super(repository.getBookings());
+        super(const BookingsState());
 
-  final DemoBookingRepository _repository;
+  final BookingsRepository _repository;
 
-  DemoBooking bookEvent(Event event) {
+  Future<void> loadBookings() async {
+    emit(state.copyWith(isLoading: true, clearError: true));
+    try {
+      final bookings = await _repository.getBookings();
+      emit(state.copyWith(
+        bookings: bookings,
+        isLoading: false,
+        clearError: true,
+      ));
+    } catch (_) {
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: 'Unable to load your tickets. Please try again.',
+      ));
+    }
+  }
+
+  Future<Booking?> bookEvent(Event event) async {
+    if (state.isBooking) return null;
+
+    emit(state.copyWith(isBooking: true, clearError: true));
     final now = DateTime.now();
-
-    final booking = DemoBooking(
+    final booking = Booking(
       id: 'booking-${now.microsecondsSinceEpoch}',
       event: event,
       bookedAt: now,
       ticketCode: 'EF-${now.microsecondsSinceEpoch}',
     );
 
-    _repository.createBooking(booking);
-    emit(_repository.getBookings());
-
-    return booking;
+    try {
+      final createdBooking = await _repository.createBooking(booking);
+      final bookings = await _repository.getBookings();
+      emit(state.copyWith(
+        bookings: bookings,
+        isBooking: false,
+        clearError: true,
+      ));
+      return createdBooking;
+    } catch (_) {
+      emit(state.copyWith(
+        isBooking: false,
+        errorMessage: 'Unable to create the demo ticket. Please try again.',
+      ));
+      return null;
+    }
   }
 }

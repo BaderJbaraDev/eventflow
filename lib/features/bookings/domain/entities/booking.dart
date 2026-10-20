@@ -1,10 +1,10 @@
 
 import 'package:equatable/equatable.dart';
 
-import '../../events/domain/event.dart';
+import '../../../events/domain/entities/event.dart';
 
-class DemoBooking extends Equatable {
-  const DemoBooking({
+class Booking extends Equatable {
+  const Booking({
     required this.id,
     required this.event,
     required this.bookedAt,
