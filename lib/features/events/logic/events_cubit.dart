@@ -6,9 +6,8 @@ import 'events_state.dart';
 
 class EventsCubit extends Cubit<EventsState> {
   EventsCubit({
-    DemoEventRepository repository = const DemoEventRepository(),
-  })  : _repository = repository,
-        super(const EventsState());
+    this._repository = const DemoEventRepository(),
+  })  : super(const EventsState());
 
   final DemoEventRepository _repository;
 

@@ -75,7 +75,7 @@ class MyTicketsPage extends StatelessWidget {
                               width: 82,
                               height: 90,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
+                              errorBuilder: (context, error, stackTrace) => Container(
                                 width: 82,
                                 height: 90,
                                 color: AppColors.background,

@@ -73,7 +73,7 @@ class BookingSuccessPage extends StatelessWidget {
                         width: double.infinity,
                         height: 150,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
+                        errorBuilder: (context, error, stackTrace) => Container(
                           height: 150,
                           color: AppColors.background,
                           child: const Icon(Icons.event, size: 48),

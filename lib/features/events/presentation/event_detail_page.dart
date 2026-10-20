@@ -59,7 +59,7 @@ class EventDetailPage extends StatelessWidget {
               background: Image.network(
                 event.imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (context, error, stackTrace) => Container(
                   color: AppColors.primary.withValues(alpha: 0.1),
                   child: const Icon(Icons.event, size: 70),
                 ),

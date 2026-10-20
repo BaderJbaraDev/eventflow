@@ -40,7 +40,7 @@ class EventCard extends StatelessWidget {
                     child: Image.network(
                       event.imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (context, error, stackTrace) => Container(
                         color: AppColors.primary.withValues(alpha: 0.08),
                         child: const Icon(
                           Icons.event,
